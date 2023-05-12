@@ -8,7 +8,6 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = os.getenv('SECRET_KEY')
 SECRET_KEY = 'django-insecure-!hty0-wcs)56ozb(pd$_qs2e(cx3n%v+5t#=g65u5!1ii3k%#o'
 
 DEBUG = True
@@ -73,13 +72,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', default=5432)
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 AUTH_PASSWORD_VALIDATORS = [
