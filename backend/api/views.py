@@ -12,6 +12,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from users.models import Follow
 
 from .filters import IngredientSearchFilter, RecipeFilter
@@ -27,18 +28,18 @@ FILENAME = 'shopping_cart.txt'
 HEADER_FILE_CART = 'Мой список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
 
 
-class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
-                          mixins.RetrieveModelMixin):
-    permission_classes = (IsAdminOrReadOnly, )
+# class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
+#                           mixins.RetrieveModelMixin):
+#     permission_classes = (IsAdminOrReadOnly, )
 
 
-class TagViewSet(ListRetrieveViewSet):
+class TagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
 
 
-class IngredientViewSet(ListRetrieveViewSet):
+class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
@@ -53,22 +54,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method in SAFE_METHODS:
             return RecipeReadSerializer
         return RecipeWriteSerializer
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return Recipe.objects.annotate(
-                is_favorited=Exists(FavoriteRecipe.objects.filter(
-                    user=self.request.user, recipe__pk=OuterRef('pk'))
-                ),
-                is_in_shopping_cart=Exists(ShoppingCart.objects.filter(
-                    user=self.request.user, recipe__pk=OuterRef('pk'))
-                )
-            )
-        else:
-            return Recipe.objects.annotate(
-                is_favorited=Value(False, output_field=BooleanField()),
-                is_in_shopping_cart=Value(False, output_field=BooleanField())
-            )
 
     @transaction.atomic()
     def perform_create(self, serializer):

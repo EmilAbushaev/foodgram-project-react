@@ -22,10 +22,6 @@ class TagsMultipleChoiceField(
                 )
 
 
-class TagsFilter(filters.AllValuesMultipleFilter):
-    field_class = TagsMultipleChoiceField
-
-
 class IngredientSearchFilter(FilterSet):
     name = CharFilter(field_name='name', lookup_expr='icontains')
 
@@ -41,14 +37,28 @@ class RecipeFilter(FilterSet):
     )
     is_in_shopping_cart = filters.BooleanFilter(
         widget=BooleanWidget(),
-        label='В корзине.'
+        label='В корзине.',
+        method='get_is_in_shopping_cart'
     )
     is_favorited = filters.BooleanFilter(
         widget=BooleanWidget(),
-        label='В избранных.'
+        label='В избранных.',
+        method='get_is_favorited'
     )
-    tags = TagsFilter(field_name='tags__slug')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
 
     class Meta:
         model = Recipe
         fields = ['author', 'tags', 'is_in_shopping_cart', 'is_favorited']
+
+    def get_is_favorited(self, queryset, name, value):
+        user = self.request.user
+        if value:
+            return Recipe.objects.filter(favorite__user=user)
+        return Recipe.objects.all()
+
+    def get_is_in_shopping_cart(self, value):
+        user = self.request.user
+        if value:
+            return Recipe.objects.filter(shopping_cart__user=user)
+        return Recipe.objects.all()
