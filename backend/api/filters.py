@@ -1,25 +1,6 @@
-from django.core.exceptions import ValidationError
-from django_filters.fields import MultipleChoiceField
 from django_filters.rest_framework import CharFilter, FilterSet, filters
 from django_filters.widgets import BooleanWidget
 from recipes.models import Ingredient, Recipe
-
-
-class TagsMultipleChoiceField(
-        MultipleChoiceField):
-    def validate(self, value):
-        if self.required and not value:
-            raise ValidationError(
-                self.error_messages['required'],
-                code='required'
-            )
-        for val in value:
-            if val in self.choices and not self.valid_value(val):
-                raise ValidationError(
-                    self.error_messages['invalid_choice'],
-                    code='invalid_choice',
-                    params={'value': val},
-                )
 
 
 class IngredientSearchFilter(FilterSet):
@@ -51,14 +32,14 @@ class RecipeFilter(FilterSet):
         model = Recipe
         fields = ['author', 'tags', 'is_in_shopping_cart', 'is_favorited']
 
-    def get_is_favorited(self, queryset, name, value):
+    def get_is_favorited(self, queryset, value):
         user = self.request.user
         if value:
-            return Recipe.objects.filter(favorite__user=user)
-        return Recipe.objects.all()
+            return queryset.filter(favorite_recipe__user=user)
+        return queryset
 
-    def get_is_in_shopping_cart(self, value):
+    def get_is_in_shopping_cart(self, queryset, value):
         user = self.request.user
         if value:
-            return Recipe.objects.filter(shopping_cart__user=user)
-        return Recipe.objects.all()
+            return queryset.filter(recipe_shopping_cart__user=user)
+        return queryset

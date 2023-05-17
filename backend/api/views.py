@@ -2,13 +2,13 @@ from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import BooleanField, Exists, OuterRef, Sum, Value
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
                             Recipe, ShoppingCart, Tag)
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from users.models import Follow
 
 from .filters import IngredientSearchFilter, RecipeFilter
-from .permissions import IsAdminAuthorOrReadOnly, IsAdminOrReadOnly
+from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
                           CheckSubscribeSerializer, FollowSerializer,
                           IngredientSerializer, RecipeAddingSerializer,
@@ -26,11 +26,6 @@ from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
 User = get_user_model()
 FILENAME = 'shopping_cart.txt'
 HEADER_FILE_CART = 'Мой список покупок:\n\nНаименование - Кол-во/Ед.изм.\n'
-
-
-# class ListRetrieveViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
-#                           mixins.RetrieveModelMixin):
-#     permission_classes = (IsAdminOrReadOnly, )
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -115,14 +110,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         return self.delete_object(ShoppingCart, request.user, pk)
 
-    @transaction.atomic()
     def add_object(self, model, user, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = RecipeAddingSerializer(recipe)
         return Response(serializer.data, status=HTTPStatus.CREATED)
 
-    @transaction.atomic()
     def delete_object(self, model, user, pk):
         model.objects.filter(user=user, recipe__id=pk).delete()
         return Response(status=HTTPStatus.NO_CONTENT)
@@ -154,7 +147,6 @@ class FollowViewSet(UserViewSet):
         detail=True,
         permission_classes=[IsAuthenticated]
     )
-    @transaction.atomic()
     def subscribe(self, request, id=None):
 
         user = request.user
@@ -173,7 +165,6 @@ class FollowViewSet(UserViewSet):
         return Response(serializer.data, status=HTTPStatus.CREATED)
 
     @subscribe.mapping.delete
-    @transaction.atomic()
     def del_subscribe(self, request, id=None):
         user = request.user
         author = get_object_or_404(User, pk=id)
