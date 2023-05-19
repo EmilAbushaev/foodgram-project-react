@@ -65,11 +65,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientsEditSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    amount = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField()
 
     class Meta:
-        model = Ingredient
+        model = IngredientInRecipe
         fields = ('id', 'amount')
 
 
@@ -78,7 +77,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     author = CustomUserListSerializer()
     ingredients = IngredientSerializer(
         many=True,
-        source='recipe',
+        source='ingredients_amount',
         required=True,
     )
     is_favorited = serializers.BooleanField(default=False)
@@ -124,7 +123,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         IngredientInRecipe.objects.bulk_create([
             IngredientInRecipe(
                 recipe=instance,
-                ingredient_id=ingredient.get('id'),
+                ingredient_id=ingredient['id'],
                 amount=ingredient.get('amount')
             ) for ingredient in ingredients
         ])
