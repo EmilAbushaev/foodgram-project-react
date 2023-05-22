@@ -65,7 +65,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientsEditSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField()
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        source='ingredient'
+    )
 
     class Meta:
         model = IngredientInRecipe
@@ -80,8 +83,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         source='ingredients_amount',
         required=True,
     )
-    is_favorited = serializers.BooleanField(default=False)
-    is_in_shopping_cart = serializers.BooleanField(default=False)
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -117,13 +120,14 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
     def add_ingredients_and_tags(self, instance, **validate_data):
         ingredients = validate_data['ingredients']
+        print(ingredients)
         tags = validate_data['tags']
         instance.tags.set(tags)
 
         IngredientInRecipe.objects.bulk_create([
             IngredientInRecipe(
                 recipe=instance,
-                ingredient_id=ingredient['id'],
+                ingredient=ingredient['ingredient'],
                 amount=ingredient.get('amount')
             ) for ingredient in ingredients
         ])
