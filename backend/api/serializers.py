@@ -93,6 +93,20 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
         )
 
+    def get_is_favorited(self, obj):
+        return (self.context.get('request').user.is_authenticated
+                and FavoriteRecipe.objects.filter(
+                    user=self.context.get('request').user,
+                    favorite_recipe=obj
+        ).exists())
+
+    def get_is_in_shopping_cart(self, obj):
+        return (self.context.get('request').user.is_authenticated
+                and ShoppingCart.objects.filter(
+                    user=self.context.get('request').user,
+                    recipe=obj
+        ).exists())
+
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
