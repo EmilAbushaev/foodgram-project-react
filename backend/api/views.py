@@ -1,4 +1,6 @@
 from http import HTTPStatus
+from django_filters.rest_framework import filters
+from rest_framework.filters import SearchFilter
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -18,8 +20,8 @@ from users.models import Follow
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
-                          CheckSubscribeSerializer, FollowSerializer,
-                          IngredientSerializer, RecipeAddingSerializer,
+                          CheckSubscribeSerializer, FollowSerializer, RecipeAddingSerializer,
+                          IngredientSerializer, IngredientsEditSerializer,
                           RecipeReadSerializer, RecipeWriteSerializer,
                           TagSerializer)
 
@@ -34,11 +36,17 @@ class TagViewSet(ReadOnlyModelViewSet):
     pagination_class = None
 
 
+class Myfilter(SearchFilter):
+    search_param = 'name'
+
+
 class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
     filter_class = IngredientSearchFilter
+    filter_backends = (Myfilter,)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

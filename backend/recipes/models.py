@@ -44,7 +44,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        ordering = ('name',)
+        ordering = ('name', 'id')
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}.'
@@ -73,7 +73,7 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         verbose_name='Изображение',
-        upload_to='image_recipes/',
+        upload_to='recipes/images',
     )
     text = models.TextField(
         verbose_name='Описание',
@@ -187,3 +187,7 @@ class ShoppingCart(models.Model):
                 name='unique_cart_user'
             )
         ]
+
+    def __str__(self):
+        return (f'Пользователь: {self.user},'
+                f'рецепт в списке: {self.recipe.name}')
