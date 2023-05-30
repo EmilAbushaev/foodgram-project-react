@@ -59,8 +59,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          docker-compose stop
-          docker-compose rm -f web
+          sudo docker-compose stop
+          sudo docker-compose rm -f web
           docker rmi $(sudo docker images '${{ secrets.DOCKER_USERNAME }}/foodgram' -q)
           rm .env -f
           touch .env
