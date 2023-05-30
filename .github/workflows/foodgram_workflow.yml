@@ -61,7 +61,7 @@ jobs:
         script: |
           sudo docker-compose stop
           sudo docker-compose rm -f web
-          docker rmi $(sudo docker images '${{ secrets.DOCKER_USERNAME }}/foodgram' -q)
+          sudo docker rmi $(sudo docker images '${{ secrets.DOCKER_USERNAME }}/foodgram' -q)
           rm .env -f
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
