@@ -1,17 +1,17 @@
 from http import HTTPStatus
-from django_filters.rest_framework import filters
-from rest_framework.filters import SearchFilter
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import filters
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
                             Recipe, ShoppingCart, Tag)
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -20,10 +20,10 @@ from users.models import Follow
 from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
-                          CheckSubscribeSerializer, FollowSerializer, RecipeAddingSerializer,
-                          IngredientSerializer, IngredientsEditSerializer,
-                          RecipeReadSerializer, RecipeWriteSerializer,
-                          TagSerializer)
+                          CheckSubscribeSerializer, FollowSerializer,
+                          IngredientsEditSerializer, IngredientSerializer,
+                          RecipeAddingSerializer, RecipeReadSerializer,
+                          RecipeWriteSerializer, TagSerializer)
 
 User = get_user_model()
 FILENAME = 'shopping_cart.txt'
