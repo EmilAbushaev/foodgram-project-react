@@ -135,7 +135,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('1')
         return data
 
-
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
@@ -144,9 +143,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
         create_ingredients = [
             IngredientInRecipe(
-                    recipe=recipe,
-                    ingredient=ingredient['ingredient'],
-                    amount=ingredient['amount'],
+                recipe=recipe,
+                ingredient=ingredient['ingredient'],
+                amount=ingredient['amount'],
             )
             for ingredient in ingredients
         ]
@@ -154,7 +153,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             create_ingredients
         )
         return recipe
-
 
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients', None)
@@ -181,8 +179,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return RecipeReadSerializer(
             instance,
-            context=self.context
-            ).data
+            context=self.context).data
 
 
 class RecipeAddingSerializer(serializers.ModelSerializer):

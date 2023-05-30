@@ -5,7 +5,6 @@ from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import filters
 from djoser.views import UserViewSet
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientInRecipe,
                             Recipe, ShoppingCart, Tag)
@@ -21,9 +20,9 @@ from .filters import IngredientSearchFilter, RecipeFilter
 from .permissions import IsAdminAuthorOrReadOnly
 from .serializers import (CheckFavoriteSerializer, CheckShoppingCartSerializer,
                           CheckSubscribeSerializer, FollowSerializer,
-                          IngredientsEditSerializer, IngredientSerializer,
-                          RecipeAddingSerializer, RecipeReadSerializer,
-                          RecipeWriteSerializer, TagSerializer)
+                          IngredientSerializer, RecipeAddingSerializer,
+                          RecipeReadSerializer, RecipeWriteSerializer,
+                          TagSerializer)
 
 User = get_user_model()
 FILENAME = 'shopping_cart.txt'
