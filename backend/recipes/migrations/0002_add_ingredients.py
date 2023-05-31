@@ -7,7 +7,7 @@ INGREDIENTS = []
 
 def make_migration(apps, schema_editor):
     global INGREDIENTS
-    file = open('../../../data/ingredients.json', encoding='UTF-8')
+    file = open('ingredients.json', encoding='UTF-8')
     data = json.load(file)
     for ingredient in data:
         data_dict = {
