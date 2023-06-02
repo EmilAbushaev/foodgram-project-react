@@ -157,11 +157,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
-        instance.tags.clear()
-        if 'tags' is not None:
+        if tags is not None:
+            instance.tags.clear()
             instance.tags.set(tags)
 
-        if 'ingredients' is not None:
+        if ingredients is not None:
             instance.ingredients.clear()
             create_ingredients = [
                 IngredientInRecipe(
